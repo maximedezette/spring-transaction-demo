@@ -1,18 +1,20 @@
-package com.aperotech.spring.transaction.demo.proxy_limitations;
+package com.aperotech.spring.transaction.demo.proxy;
 
 import com.aperotech.spring.transaction.demo.bean.proxy.CGLIBBean;
 import org.junit.jupiter.api.Test;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @SpringBootTest
-public class CGLIBProxyLimitationsTest {
+public class CGLibProxyTest {
 
 
     @Autowired
@@ -25,6 +27,18 @@ public class CGLIBProxyLimitationsTest {
      * Advanced topic Spring proxy
      */
 
+    @Test
+    void isAOPproxied() {
+        boolean isAopProxied = AopUtils.isAopProxy(cglibBean);
+
+        assertThat(isAopProxied).isTrue();
+    }
+    @Test
+    void isCGLibProxied() {
+        boolean isProxiedByCGLib = AopUtils.isCglibProxy(cglibBean);
+
+        assertThat(isProxiedByCGLib).isTrue();
+    }
     @Test
     void shouldStartTransaction() {
         cglibBean.regularTransactionalMethod();

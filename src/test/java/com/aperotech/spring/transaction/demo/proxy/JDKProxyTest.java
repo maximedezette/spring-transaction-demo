@@ -1,11 +1,10 @@
-package com.aperotech.spring.transaction.demo.proxy_limitations;
+package com.aperotech.spring.transaction.demo.proxy;
 
-import com.aperotech.spring.transaction.demo.bean.proxy.JDKProxyBean;
+import com.aperotech.spring.transaction.demo.bean.proxy.JDKProxy;
 import org.junit.jupiter.api.Test;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -15,19 +14,33 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @SpringBootTest
-@TestConfiguration(proxyBeanMethods = false)
-public class JDKProxyLimitationsTest {
+public class JDKProxyTest {
 
 
     @Autowired
-    private JDKProxyBean jdkProxyBean;
+    private JDKProxy jdkProxyBean;
 
     @SpyBean
     private PlatformTransactionManager transactionManager;
 
+
     /**
      * Advanced topic Spring proxy
      */
+
+    @Test
+    void isAOPproxied() {
+        boolean isAopProxied = AopUtils.isAopProxy(jdkProxyBean);
+
+        assertThat(isAopProxied).isTrue();
+    }
+
+    @Test
+    void isJDKproxied() {
+        boolean isProxiedByJdkDynamicProxy = AopUtils.isJdkDynamicProxy(jdkProxyBean);
+
+        assertThat(isProxiedByJdkDynamicProxy).isTrue();
+    }
 
     @Test
     void shouldStartTransaction() {
@@ -36,6 +49,7 @@ public class JDKProxyLimitationsTest {
         verify(transactionManager, times(1)).commit(any());
         verify(transactionManager, times(0)).rollback(any());
     }
+
     @Test
     void shouldNotStartTransactionCallingPublicMethodFromInsideTheProxy() {
         jdkProxyBean.callTransactionalMethodFromSameInterface();
@@ -45,22 +59,13 @@ public class JDKProxyLimitationsTest {
     }
 
     @Test
-    void shouldBeProxifiedByCGLibWhenMethodNotInInterface() {
-        jdkProxyBean.methodNotInInterface();
-
-        boolean proxiedByCGlib = AopUtils.isCglibProxy(jdkProxyBean);
-
-        assertThat(proxiedByCGlib).isTrue();
-        verify(transactionManager, times(1)).commit(any());
-    }
-
-    @Test
-    void shouldNotStartTransactionFromFinalMethod() {
+    void shouldStartTransactionFromFinalMethod() {
         jdkProxyBean.finalMethod();
 
-        verify(transactionManager, times(0)).commit(any());
+        verify(transactionManager, times(1)).commit(any());
         verify(transactionManager, times(0)).rollback(any());
     }
+
     @Test
     void shouldNotStartTransactionCallingPrivateMethods() {
         jdkProxyBean.callPrivateAnnotatedMethod();
@@ -68,6 +73,7 @@ public class JDKProxyLimitationsTest {
         verify(transactionManager, times(0)).commit(any());
         verify(transactionManager, times(0)).rollback(any());
     }
+
     @Test
     void shouldNotStartTransactionCallingProtectedMethods() {
         jdkProxyBean.callProtectedAnnotatedMethod();
