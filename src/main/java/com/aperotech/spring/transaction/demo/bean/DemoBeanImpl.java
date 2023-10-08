@@ -6,10 +6,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.sql.SQLException;
 
 @Component
-public class DemoBeanImpl implements DemoBean {
+public class DemoBeanImpl implements Demo {
 
     /**
-     * We could have annotated the class with @Transactional to
+     * We could have annotated the class with  to
      * make all methods transactional.
      */
     @Override

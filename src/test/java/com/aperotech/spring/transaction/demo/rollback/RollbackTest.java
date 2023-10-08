@@ -1,6 +1,6 @@
 package com.aperotech.spring.transaction.demo.rollback;
 
-import com.aperotech.spring.transaction.demo.bean.DemoBean;
+import com.aperotech.spring.transaction.demo.bean.Demo;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,7 +16,7 @@ import static org.mockito.Mockito.*;
 public class RollbackTest {
 
     @Autowired
-    private DemoBean demoBean;
+    private Demo demoBean;
 
     @SpyBean
     private PlatformTransactionManager transactionManager;

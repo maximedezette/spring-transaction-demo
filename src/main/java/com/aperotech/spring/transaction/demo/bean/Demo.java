@@ -2,7 +2,7 @@ package com.aperotech.spring.transaction.demo.bean;
 
 import java.sql.SQLException;
 
-public interface DemoBean {
+public interface Demo {
 
     void requiredNew();
 
